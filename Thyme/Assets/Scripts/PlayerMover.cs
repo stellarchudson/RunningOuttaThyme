@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Debug = UnityEngine.Debug;
 
 public class PlayerMover : MonoBehaviour
 {
@@ -12,10 +14,11 @@ public class PlayerMover : MonoBehaviour
     public Animator Animator;
     bool jump = false;
     bool crouch = false;
+    bool run = true;
     [SerializeField] float runSpeed = 10f;
-    private int jumpcount = 0;
-    private int crouchcount = 0;
+    private float jumpcount = 0f;
     private Rigidbody2D body;
+
 
     private void Start()
     {
@@ -25,15 +28,22 @@ public class PlayerMover : MonoBehaviour
 
     // Update is called once per frame
     void Update () {
-        
+
         //transform.position += Vector3.right * Time.deltaTime * runSpeed;
-        body.AddForce(transform.right * runSpeed);
-        
+        if (run)
+        {
+            body.AddForce(transform.right * runSpeed);
+        }
+
+        else
+        {
+            body.velocity = new Vector2(0,0);
+        }
+
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            jump = true;
-            Animator.SetBool("Jump", true);
+            StartCoroutine(ManageJumpInput());
 
         }
 
@@ -50,6 +60,65 @@ public class PlayerMover : MonoBehaviour
         }
 
     }
+
+    //Event inputs: hit, landed
+    //Implied: when we get here, we have pressed down the up arrow
+    IEnumerator ManageJumpInput()
+    {
+        jumpcount = 0;
+        //Start a timer
+
+        while (Input.GetKey(KeyCode.UpArrow))
+        {
+            //Do nothing, wait until this is not true
+            //jumpcount++;
+            jumpcount += Time.deltaTime;
+
+            if (jumpcount >= 2)
+            {
+                run = false;
+                Debug.Log("ass");
+            }
+            yield return null;
+        }
+        
+        
+        
+        
+        //case 1: jump 
+            //do normal jump code (jump = true)
+            if (controller.IsGrounded)
+            {
+                jump = true;
+                Animator.SetBool("Jump", true);
+            }
+
+            //case 2: double
+        //check if currently jumping, jump again
+        if (!controller.IsGrounded)
+        {
+            jump = true;
+            //TODO: fix infinite jump
+        }
+        //case 3: hold
+            //set run to no, jump special, run once landed
+            if (controller.IsGrounded && jumpcount >= 3)
+            {
+                controller.JumpForce = 900f;
+                jump = true;
+
+
+            }
+
+            run = true;
+
+
+
+
+
+
+    }
+    
 
     public void underLanding(bool isCrouch)
     {

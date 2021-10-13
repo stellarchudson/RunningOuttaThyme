@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,10 +10,35 @@ public class Movement : MonoBehaviour
 	[SerializeField] private LayerMask m_WhatIsGround;							// A mask determining what is ground to the character
 	[SerializeField] private Transform m_GroundCheck;							// A position marking where to check if the player is grounded.
 	[SerializeField] private Transform m_CeilingCheck;							// A position marking where to check for ceilings
-	[SerializeField] private Collider2D m_CrouchDisableCollider;				// A collider that will be disabled when crouching
+	[SerializeField] private Collider2D m_CrouchDisableCollider; // A collider that will be disabled when crouching
 
 	const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 	private bool m_Grounded;            // Whether or not the player is grounded.
+
+	public bool IsGrounded
+	{
+		get
+		{
+			return m_Grounded;
+		}
+	}
+
+	public float JumpForce
+	{
+		
+		get
+		{
+			return m_JumpForce;
+		}
+
+		set
+		{
+			m_JumpForce = value;
+		}
+		
+		
+	}
+
 	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up
 	private Rigidbody2D m_Rigidbody2D;
 
@@ -56,7 +82,14 @@ public class Movement : MonoBehaviour
 					OnLandEvent.Invoke();
 			}
 		}
+		
+		
+			
+
+
 	}
+
+	
 
 
 	public void Move(bool crouch, bool jump)
@@ -78,6 +111,8 @@ public class Movement : MonoBehaviour
 			// If crouching
 			if (crouch)
 			{
+
+
 				if (!m_wasCrouching)
 				{
 					m_wasCrouching = true;
@@ -104,7 +139,7 @@ public class Movement : MonoBehaviour
 			
 		}
 		// If the player should jump...
-		if (m_Grounded && jump)
+		if (jump)
 		{
 			// Add a vertical force to the player.
 			m_Grounded = false;
