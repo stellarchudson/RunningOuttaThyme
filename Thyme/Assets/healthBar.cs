@@ -20,7 +20,7 @@ public class healthBar : MonoBehaviour
 
     public void SetEnergy(int coffee)
     {
-        energy.value = coffee;
+        energy.value += coffee;
         fill.color = gradient.Evaluate(energy.normalizedValue);
     }
 
