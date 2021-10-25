@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Addenergy : MonoBehaviour
+public class pointAdd : MonoBehaviour
 {
-    [SerializeField] healthBar energy;
-  
+    public int points;
+    [SerializeField] private pointCounter text;
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player")
         {
-            energy.SetEnergy(10);
+            points++;
+            text.SetText(points);
             Destroy(gameObject);
         }
 
