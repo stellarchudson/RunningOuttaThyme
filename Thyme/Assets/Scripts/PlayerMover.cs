@@ -12,12 +12,13 @@ public class PlayerMover : MonoBehaviour
     
     public Movement controller;
     public Animator Animator;
-    bool jump = false;
+    public bool jump = false;
     bool crouch = false;
     bool run = true;
     [SerializeField] float runSpeed = 10f;
     private float jumpcount = 0f;
     private Rigidbody2D body;
+    private int jumpNum = 0;
 
 
     private void Start()
@@ -90,6 +91,7 @@ public class PlayerMover : MonoBehaviour
             if (controller.IsGrounded)
             {
                 jump = true;
+                jumpNum++;
                 Animator.SetBool("Jump", true);
             }
 
@@ -97,7 +99,18 @@ public class PlayerMover : MonoBehaviour
         //check if currently jumping, jump again
         if (!controller.IsGrounded)
         {
-            jump = true;
+            jumpNum++;
+
+            if (jumpNum >= 3)
+            {
+               jumpNum = 0;
+               jump = false;
+            }
+            else
+            {
+                jump = true;
+                Animator.SetBool("Jump", true);
+            }
             //TODO: fix infinite jump
         }
         //case 3: hold
@@ -106,6 +119,8 @@ public class PlayerMover : MonoBehaviour
             {
                 controller.JumpForce = 900f;
                 jump = true;
+                Animator.SetBool("Jump", true);
+                
 
 
             }
@@ -120,21 +135,23 @@ public class PlayerMover : MonoBehaviour
     }
     
 
-    public void underLanding(bool isCrouch)
-    {
-        Animator.SetBool("Crouch", isCrouch);
-    }
-
-    public void onLanding()
-    {
-        Animator.SetBool("Jump", false);
-    }
-
     void FixedUpdate ()
     {
         // Move our character
         controller.Move(crouch, jump);
-        jump = false;
+        
+            jump = false;
+      
+        
+        if (jump){
+            Animator.SetBool("Jump", true);
+        }
+        else
+        {
+            Animator.SetBool("Jump", false);
+           
+        }
+       
     }
  
   
